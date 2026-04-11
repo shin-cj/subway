@@ -9,7 +9,7 @@ import Font.loadfont;
 public class FrameLogin11111 extends JPanel {
 
     private Color bgColor = Color.WHITE;
-
+    // 깃허브
     public FrameLogin11111() {
         if (loadfont.Freesentation9Black == null) {
             loadfont.loadFonts(); 
