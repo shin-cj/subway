@@ -79,7 +79,7 @@ public class FrameLogin11111 extends JPanel {
         gbc.insets = new Insets(20, 0, 0, 0);
         gbc.gridy = 4; center.add(btnPanel, gbc);
 
-        // 하단 안내 메시지
+        // 하단 안내 메시지DD
         JLabel pointMsg = new JLabel("회원 가입 시 500 포인트 지급", SwingConstants.CENTER);
         pointMsg.setFont(loadfont.Freesentation9Black.deriveFont(18f));
         pointMsg.setBorder(new EmptyBorder(20, 0, 0, 0));
