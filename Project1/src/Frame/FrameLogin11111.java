@@ -33,7 +33,7 @@ public class FrameLogin11111 extends JPanel {
 
         top.add(img, BorderLayout.NORTH);
         top.add(titleLabel, BorderLayout.CENTER);
-
+        // 바끰
         // 중앙 영역
         JPanel center = new JPanel(new GridBagLayout());
         center.setBackground(bgColor);
