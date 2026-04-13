@@ -23,7 +23,7 @@ public class FrameBase extends JFrame {
 	private Point initialClick; // 창 드래그를 위한 시작 좌표 변수
 
 	public FrameBase(JPanel e) {
-		// 변경
+
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		setTitle("저 이번역에서 내려요");
 		
