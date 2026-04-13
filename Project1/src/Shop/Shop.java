@@ -26,6 +26,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import Frame.FrameBase;
+import Frame.ModernScrollBarUI;
 import MyPage.MyPage;
 import Share.UserInfo;
 
@@ -84,6 +85,8 @@ public class Shop extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(listPanel);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.getVerticalScrollBar().setUI(new ModernScrollBarUI());
+		scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
 		add(scrollPane, BorderLayout.CENTER);
 
 		// --- [공통 버튼 이벤트] ---

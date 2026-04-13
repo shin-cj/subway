@@ -1,12 +1,12 @@
 package Main;
 
 import Frame.FrameBase;
-import Frame.FrameLogin11111;
+import Frame.FrameLoginMain;
 
 public class SubwayProjectMain {
 
 	public static void main(String[] args) {
-		FrameBase.getInstance(new FrameLogin11111());
+		FrameBase.getInstance(new FrameLoginMain());
 		
 	}
 

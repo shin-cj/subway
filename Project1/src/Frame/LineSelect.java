@@ -120,6 +120,9 @@ public class LineSelect extends JPanel {
       scroll.getViewport().setOpaque(false);
       scroll.getVerticalScrollBar().setUnitIncrement(25);
 
+      scroll.getVerticalScrollBar().setUI(new ModernScrollBarUI());
+      scroll.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
+
       add(scroll, BorderLayout.CENTER);
 
       // 하단바

@@ -6,15 +6,15 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import Font.loadfont;
 
-public class FrameLogin11111 extends JPanel {
-
+public class FrameLoginMain extends JPanel {
+	
     private Color bgColor = Color.WHITE;
-    // 깃허브
-    public FrameLogin11111() {
+
+    public FrameLoginMain() {
         if (loadfont.Freesentation9Black == null) {
             loadfont.loadFonts(); 
         }
-
+        // 왜안될까
         setBackground(bgColor);
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(30, 50, 30, 50));
@@ -33,7 +33,7 @@ public class FrameLogin11111 extends JPanel {
 
         top.add(img, BorderLayout.NORTH);
         top.add(titleLabel, BorderLayout.CENTER);
-        
+
         // 중앙 영역
         JPanel center = new JPanel(new GridBagLayout());
         center.setBackground(bgColor);
@@ -125,7 +125,7 @@ public class FrameLogin11111 extends JPanel {
 
         // 3. 회원가입 버튼 클릭 리스너
         signupBtn.addActionListener(e -> {
-            FrameBase.getInstance(new FrameLogin2222());
+            FrameBase.getInstance(new FrameLoginJoin());
         });
     }
 }
