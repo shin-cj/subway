@@ -26,7 +26,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import Frame.FrameBase;
-import Share.ModernScrollBarUI;
+import Frame.ModernScrollBarUI;
 import MyPage.MyPage;
 import Share.UserInfo;
 

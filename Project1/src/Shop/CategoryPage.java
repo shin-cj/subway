@@ -8,7 +8,7 @@ import javax.swing.border.EmptyBorder;
 
 import Font.loadfont; // 폰트 적용 (필요하면 맑은 고딕으로 바꿔도 됨)
 import Frame.FrameBase;
-import Share.ModernScrollBarUI;
+import Frame.ModernScrollBarUI;
 import Share.BottomMenu;
 import java.awt.geom.RoundRectangle2D;
 

@@ -4,14 +4,19 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import Font.loadfont;
 import Frame.FrameBase;
+import Frame.FrameLoginJoin;
 import Frame.FrameLoginMain;
 import Share.BottomMenu;
 import Share.UserInfo;
+import Shop.CategoryPage;
+import Shop.GifticonPage;
 import Shop.OrderDetail;
 import Shop.ShopDataManager;
+import Shop.Shop;
 
 public class MyPage extends JPanel {
 
@@ -64,13 +69,15 @@ public class MyPage extends JPanel {
 
         // [2] 메뉴 버튼들 (너비 370, 위치 x=20 고정)
         JButton userInfoBtn = createStyledButton("내 정보 확인 및 변경", 180);
-        JButton pointHistory = createStyledButton("포인트 적립 내역", 245);
+        JButton pointHistory = createStyledButton("포인트 사용 내역", 245);
         JButton btnHistory = createStyledButton("구매내역", 310);
+        JButton btnGifticon = createStyledButton("기프티콘 보관함", 350); // 💡 새로 추가된 버튼!
         JButton btnFortune = createStyledButton("오늘의 운세 보기  -10p", 375);
+        JButton btnShop = createStyledButton("상점 가기", 440);
         
         // [3] 로그아웃 버튼 (하단 중앙 배치)
         JButton logout = new JButton("로그아웃");
-        logout.setBounds(145, 520, 120, 38); // 410 너비에서 중앙 정렬 (145 + 120 + 145 = 410)
+        logout.setBounds(145, 540, 120, 38); // 410 너비에서 중앙 정렬 (145 + 120 + 145 = 410)
         logout.setFont(loadfont.Freesentation8ExtraBold.deriveFont(13f));
         logout.setBackground(Color.WHITE);
         logout.setForeground(new Color(150, 150, 150));
@@ -81,7 +88,9 @@ public class MyPage extends JPanel {
         centerPanel.add(userInfoBtn);
         centerPanel.add(pointHistory);
         centerPanel.add(btnHistory);
+        centerPanel.add(btnGifticon);
         centerPanel.add(btnFortune);
+        centerPanel.add(btnShop);
         centerPanel.add(logout);
         
         // --- 이벤트 설정 (기존 로직 유지) ---
@@ -118,7 +127,7 @@ public class MyPage extends JPanel {
                     showSimplePopup("알림", "적립된 내역이 없습니다.");
                 } else {
                     StringBuilder sb = new StringBuilder("<html><body style='width: 200px;'>");
-                    sb.append("<h4 style='text-align: center; color: #2864C8;'>포인트 적립 리스트</h4><hr>");
+                    sb.append("<h4 style='text-align: center; color: #2864C8;'>포인트 사용 리스트</h4><hr>");
                     for (String log : history) sb.append("• ").append(log).append("<br>");
                     sb.append("</body></html>");
                     JOptionPane.showMessageDialog(this, sb.toString(), "내역", JOptionPane.PLAIN_MESSAGE);
@@ -139,6 +148,9 @@ public class MyPage extends JPanel {
                 int current = UserInfo.currentUser.getPoints();
                 if (current >= 10) {
                     UserInfo.currentUser.setPoints(current - 10);
+                 // 💡 [추가] 운세 보기 지출 내역 기록!
+                    UserInfo.currentUser.addPointHistory("오늘의 운세 보기: -10 P"); 
+                    
                     refreshUI();
                     showSimplePopup("오늘의 운세", coment.getRandomFortune());
                 } else {
@@ -146,6 +158,19 @@ public class MyPage extends JPanel {
                 }
             }
         });
+        
+     // 💡 기프티콘 보관함 클릭 이벤트
+        btnGifticon.addActionListener(e -> {
+            if (dataManager.getOrderHistory().isEmpty()) {
+                showSimplePopup("알림", "보관된 기프티콘이 없습니다.");
+            } else {
+                new GifticonPage(dataManager); // 
+            }
+        });
+        
+        
+
+        btnShop.addActionListener(e -> FrameBase.getInstance(new CategoryPage()));
 
         logout.addActionListener(e -> {
             int result = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "Logout", JOptionPane.YES_NO_OPTION);
