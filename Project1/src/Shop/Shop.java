@@ -282,9 +282,11 @@ public class Shop extends JPanel {
 			if (currentPrice >= totalPrice) {
 				dataManager.setMyPrice(currentPrice - totalPrice);
 	
-				// 💡 [추가] 상점 구매 지출 내역 기록!
+				// 💡 [추가] 상점 구매 지출 내역 기록,상점 구매 지출 내역에 시간 추가
 				if (UserInfo.currentUser != null) {
-					UserInfo.currentUser.addPointHistory("[" + item.getName() + "] " + selectedQty + "개 구매: -" + totalPrice + " P");
+					
+					String timeStr = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("MM/dd HH:mm"));
+					UserInfo.currentUser.addPointHistory("[" + timeStr + "] [" + item.getName() + "] " + selectedQty + "개 구매: -" + totalPrice + " P");
 				}
 				
 				// 주문 내역에도 선택한 수량만큼 추가

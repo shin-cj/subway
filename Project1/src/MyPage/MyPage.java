@@ -71,9 +71,9 @@ public class MyPage extends JPanel {
         JButton userInfoBtn = createStyledButton("내 정보 확인 및 변경", 180);
         JButton pointHistory = createStyledButton("포인트 사용 내역", 245);
         JButton btnHistory = createStyledButton("구매내역", 310);
-        JButton btnGifticon = createStyledButton("기프티콘 보관함", 350); // 💡 새로 추가된 버튼!
-        JButton btnFortune = createStyledButton("오늘의 운세 보기  -10p", 375);
-        JButton btnShop = createStyledButton("상점 가기", 440);
+        JButton btnGifticon = createStyledButton("기프티콘 보관함", 375); // 💡 새로 추가된 버튼!
+        JButton btnFortune = createStyledButton("오늘의 운세 보기  -10p", 440);
+        //JButton btnShop = createStyledButton("상점 가기", 440);
         
         // [3] 로그아웃 버튼 (하단 중앙 배치)
         JButton logout = new JButton("로그아웃");
@@ -90,7 +90,6 @@ public class MyPage extends JPanel {
         centerPanel.add(btnHistory);
         centerPanel.add(btnGifticon);
         centerPanel.add(btnFortune);
-        centerPanel.add(btnShop);
         centerPanel.add(logout);
         
         // --- 이벤트 설정 (기존 로직 유지) ---
@@ -170,7 +169,7 @@ public class MyPage extends JPanel {
         
         
 
-        btnShop.addActionListener(e -> FrameBase.getInstance(new CategoryPage()));
+       // btnShop.addActionListener(e -> FrameBase.getInstance(new CategoryPage()));
 
         logout.addActionListener(e -> {
             int result = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "Logout", JOptionPane.YES_NO_OPTION);

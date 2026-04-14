@@ -20,7 +20,7 @@ public class CategoryPage extends JPanel {
         setBackground(new Color(245, 245, 250)); // 연한 배경
 
         // 상단 타이틀
-        JLabel title = new JLabel("카테고리 선택", SwingConstants.CENTER);
+        JLabel title = new JLabel("상품 카테고리 선택", SwingConstants.CENTER);
         title.setFont(new Font("맑은 고딕", Font.BOLD, 24));
         title.setBorder(new EmptyBorder(30, 0, 30, 0));
         add(title, BorderLayout.NORTH);

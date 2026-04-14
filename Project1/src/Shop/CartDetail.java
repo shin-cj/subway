@@ -19,7 +19,7 @@ public class CartDetail extends JFrame {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
 
-		JLabel title = new JLabel("🛒 나의 장바구니", SwingConstants.LEFT);
+		JLabel title = new JLabel("나의 장바구니", SwingConstants.LEFT);
 		title.setFont(new Font("맑은 고딕", Font.BOLD, 22));
 
 		JButton buyAllBtn = new JButton("전체 구매");
@@ -57,7 +57,7 @@ public class CartDetail extends JFrame {
 		        totalPrice += (shopDB.get(itemName).getPrice() * qty);
 		    }
 
-		    String confirmMsg = String.format("총 %d개의 상품 (합계 %d원)\n정말 구매하시겠습니까?", totalQty, totalPrice);
+		    String confirmMsg = String.format("총 %d개의 상품 (합계 %dP)\n정말 구매하시겠습니까?", totalQty, totalPrice);
 		    int result = JOptionPane.showConfirmDialog(this, confirmMsg, "구매 확인", JOptionPane.YES_NO_OPTION);
 		    
 		    // 사용자가 '아니오'를 누르거나 창을 그냥 끄면 여기서 바로 멈춥니다(return).
@@ -70,7 +70,13 @@ public class CartDetail extends JFrame {
 		    
 		    if (currentPrice >= totalPrice) {
 		        dataManager.setMyPrice(currentPrice - totalPrice);
-
+		        
+		     // 💡 [추가] 전체 구매 시 포인트 사용 내역 기록!
+		        if (UserInfo.currentUser != null) {
+		        	String timeStr = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("MM/dd HH:mm"));
+		            UserInfo.currentUser.addPointHistory("[" + timeStr + "전체 구매] 총 " + totalQty + "개 결제: -" + totalPrice + " P");
+		        }
+		        
 		        for (Map.Entry<String, Integer> entry : cart.entrySet()) {
 		            String itemName = entry.getKey();
 		            int qty = entry.getValue();
@@ -79,7 +85,7 @@ public class CartDetail extends JFrame {
 
 		        cart.clear(); 
 
-		        String msg = String.format("전체 구매가 완료되었습니다! 🎉\n\n총 구매 수량 : %d개\n총 결제 금액 : %d원\n남은 잔액 : %d원", 
+		        String msg = String.format("전체 구매가 완료되었습니다! \n\n총 구매 수량 : %d개\n총 결제 금액 : %dP\n남은 잔액 : %dP", 
 		                                    totalQty, totalPrice, dataManager.getMyPrice());
 		        JOptionPane.showMessageDialog(this, msg, "결제 완료", JOptionPane.INFORMATION_MESSAGE);
 
@@ -87,7 +93,7 @@ public class CartDetail extends JFrame {
 		        dispose(); 
 
 		    } else {
-		        JOptionPane.showMessageDialog(this, "잔액이 부족합니다. ㅠㅠ\n필요 금액: " + (totalPrice-UserInfo.currentUser.getPoints()) + "원", "구매 실패", JOptionPane.ERROR_MESSAGE);
+		        JOptionPane.showMessageDialog(this, "잔액이 부족합니다. ㅠㅠ\n필요 금액: " + (totalPrice-UserInfo.currentUser.getPoints()) + "P", "구매 실패", JOptionPane.ERROR_MESSAGE);
 		    }
 		});
 		
@@ -148,7 +154,7 @@ public class CartDetail extends JFrame {
             
             // 4-2. 합계 금액 라벨 (아래쪽)
             int totalPrice = itemInfo.getPrice() * qty; // 상품 단가 * 수량
-            JLabel priceLabel = new JLabel("합계: " + totalPrice + "원");
+            JLabel priceLabel = new JLabel("합계: " + totalPrice + "P");
             priceLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
             priceLabel.setForeground(new Color(0, 102, 204)); // 눈에 띄게 파란색 계열 적용
             priceLabel.setHorizontalAlignment(SwingConstants.RIGHT); // 우측 정렬
@@ -177,6 +183,13 @@ public class CartDetail extends JFrame {
             	if(currentPrice >= totalPrice) {
             		//잔액 차감
             		dataManager.setMyPrice(currentPrice - totalPrice);
+            		
+            		// 💡 [추가] 개별 구매 시 포인트 사용 내역 기록!
+            		if (UserInfo.currentUser != null) {
+            			String timeStr = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("MM/dd HH:mm"));
+            		    UserInfo.currentUser.addPointHistory("[" + timeStr + "] [" + itemName + "] " + qty + "개 구매: -" + totalPrice + " P");
+            		}
+            		
             		//주문 내역에 추가 (기존 수량에 방금 산 수량 +)
             		dataManager.getOrderHistory().put(
             		itemName, dataManager.getOrderHistory().
@@ -187,7 +200,7 @@ public class CartDetail extends JFrame {
             		listPanel.revalidate();
             		listPanel.repaint();
             		
-            		JOptionPane.showMessageDialog(this,"["+ itemName +"] 결제가 완료되었습니다.\n 남은 잔액: " + dataManager.getMyPrice()+"원");
+            		JOptionPane.showMessageDialog(this,"["+ itemName +"] 결제가 완료되었습니다.\n 남은 잔액: " + dataManager.getMyPrice()+"P");
             	
             	if(updateMainUI != null) {
             		updateMainUI.run();
@@ -199,7 +212,7 @@ public class CartDetail extends JFrame {
             	
             	}else {
             		
-            		JOptionPane.showMessageDialog(this, "잔액이 부족합니다. ㅠㅠ\n필요 금액: " +(totalPrice-UserInfo.currentUser.getPoints())+ "원", "구매 실패", JOptionPane.ERROR_MESSAGE);
+            		JOptionPane.showMessageDialog(this, "잔액이 부족합니다. ㅠㅠ\n필요 금액: " +(totalPrice-UserInfo.currentUser.getPoints())+ "P", "구매 실패", JOptionPane.ERROR_MESSAGE);
             	}
             });
             
