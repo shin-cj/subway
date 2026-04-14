@@ -67,7 +67,7 @@ public class MyPage extends JPanel {
         JButton pointHistory = createStyledButton("포인트 적립 내역", 245);
         JButton btnHistory = createStyledButton("구매내역", 310);
         JButton btnFortune = createStyledButton("오늘의 운세 보기  -10p", 375);
-        
+        // test
         // [3] 로그아웃 버튼 (하단 중앙 배치)
         JButton logout = new JButton("로그아웃");
         logout.setBounds(145, 520, 120, 38); // 410 너비에서 중앙 정렬 (145 + 120 + 145 = 410)
