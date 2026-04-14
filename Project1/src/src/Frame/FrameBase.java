@@ -16,7 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+//마이크테스트 아아 들리세요?
 public class FrameBase extends JFrame {
 
 	private static FrameBase instance;
