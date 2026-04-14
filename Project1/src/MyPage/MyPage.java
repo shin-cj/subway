@@ -41,7 +41,7 @@ public class MyPage extends JPanel {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(null);
         centerPanel.setBackground(new Color(250, 250, 252)); // 약간 더 밝고 깨끗한 배경
-
+        //테스트입니다
         // [1] 유저 카드 (너비 370으로 조정, 여백 20)
         JPanel userCard = new JPanel(null);
         userCard.setBounds(20, 20, 370, 140);
