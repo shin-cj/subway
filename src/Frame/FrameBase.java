@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Font.loadfont; // 폰트 관리를 위해 import 추가
-123123
+123123123123
 /**
  * FrameBase: 앱의 메인 윈도우 틀을 형성하는 클래스입니다.
  * 커스텀 타이틀바의 특수문자 깨짐 방지를 위해 SafeFont를 적용했습니다.
