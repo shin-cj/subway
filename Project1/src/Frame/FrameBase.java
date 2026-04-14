@@ -17,13 +17,23 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import Font.loadfont; // 폰트 관리를 위해 import 추가
+
+/**
+ * FrameBase: 앱의 메인 윈도우 틀을 형성하는 클래스입니다.
+ * 커스텀 타이틀바의 특수문자 깨짐 방지를 위해 SafeFont를 적용했습니다.
+ */
 public class FrameBase extends JFrame {
 
 	private static FrameBase instance;
 	private Point initialClick; // 창 드래그를 위한 시작 좌표 변수
 
 	public FrameBase(JPanel e) {
-		// 변경
+		// 폰트 로드 확인
+		if (loadfont.NanumEB == null) {
+			loadfont.loadFonts();
+		}
+
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		setTitle("저 이번역에서 내려요");
 		
@@ -37,24 +47,25 @@ public class FrameBase extends JFrame {
 		setBounds(((int) tk.getScreenSize().getWidth() - width) / 2, 
 				((int) tk.getScreenSize().getHeight() - height) / 2, width, height);
 		
-		// 3. 모서리 둥글기 완화 (곡률 40 -> 20으로 줄여서 자연스럽게 변경)
+		// 3. 모서리 둥글기 완화 (곡률 20으로 설정)
 		setShape(new RoundRectangle2D.Double(0, 0, width, height, 20, 20));
 
-		// 4. [추가] 드래그 및 닫기 버튼이 있는 커스텀 상단 타이틀 바
+		// 4. 드래그 및 닫기 버튼이 있는 커스텀 상단 타이틀 바
 		setLayout(new BorderLayout());
 		
 		JPanel titleBar = new JPanel(new BorderLayout());
 		titleBar.setPreferredSize(new Dimension(width, 30));
 		titleBar.setBackground(Color.WHITE); // 배경색과 맞춤
 		
-		// 우측 상단 닫기 버튼
+		// [수정] 우측 상단 닫기 버튼 폰트 설정
+		// '✕' 기호가 커스텀 폰트에서 깨지는 것을 방지하기 위해 loadfont.SafeFont를 사용합니다.
 		JButton closeBtn = new JButton("✕");
-		closeBtn.setFont(new Font("SansSerif", Font.BOLD, 15));
 		closeBtn.setForeground(Color.GRAY);
 		closeBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15)); // 우측 여백
 		closeBtn.setContentAreaFilled(false);
 		closeBtn.setFocusPainted(false);
 		closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		closeBtn.setFont(new Font(Font.DIALOG, Font.BOLD, 15));
 		closeBtn.addActionListener(evt -> System.exit(0)); // 프로그램 완전 종료
 		titleBar.add(closeBtn, BorderLayout.EAST);
 
@@ -82,12 +93,12 @@ public class FrameBase extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	// 싱글톤
+	// 싱글톤 패턴으로 인스턴스 관리
 	public static FrameBase getInstance(JPanel e) {
 		if(instance == null) {
 			instance = new FrameBase(e);
 		} else {
-			// [중요 수정] 화면 이동 시 타이틀바(닫기버튼)가 날아가지 않도록 CENTER 패널만 교체
+			// 화면 이동 시 타이틀바(닫기버튼)가 유지되도록 CENTER 패널만 교체
 			BorderLayout layout = (BorderLayout) instance.getContentPane().getLayout();
 			Component center = layout.getLayoutComponent(BorderLayout.CENTER);
 			if (center != null) {

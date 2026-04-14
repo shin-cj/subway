@@ -26,7 +26,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import Frame.FrameBase;
-import Frame.ModernScrollBarUI;
+import Share.ModernScrollBarUI;
 import MyPage.MyPage;
 import Share.UserInfo;
 
@@ -34,6 +34,7 @@ public class Shop extends JPanel {
 	private ShopDataManager dataManager = ShopDataManager.getInstance();
 	private JLabel myMoneLabel;
 	private JPanel listPanel;
+	private String selectedCategory;
 	
 	
 	// 추가된 전역 변수: 상점 DB와 잔액 표시 라벨
@@ -43,14 +44,16 @@ public class Shop extends JPanel {
 	private CartDetail cartDetailWindow = null;
 	private OrderDetail orderDetailWindow = null;
 	
-	public Shop() {
+	public Shop(String category) {
+		this.selectedCategory = category;
+		
 		setLayout(new BorderLayout());
 
 		// [상단] 내 잔액과 공통 버튼 배치
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		myMoneyLabel = new JLabel("내 잔액: " + dataManager.getMyPrice() + "원");
+		myMoneyLabel = new JLabel("내 잔액: " + dataManager.getMyPrice() + "P");
 		myMoneyLabel.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 
 		JPanel topBtnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
@@ -82,7 +85,10 @@ public class Shop extends JPanel {
 
 		refreshProductList();
 		
-		JScrollPane scrollPane = new JScrollPane(listPanel);
+		JPanel wrapperPanel = new JPanel(new BorderLayout());
+        wrapperPanel.add(listPanel, BorderLayout.NORTH); // listPanel을 북쪽에 딱 붙임
+		
+		JScrollPane scrollPane = new JScrollPane(wrapperPanel);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.getVerticalScrollBar().setUI(new ModernScrollBarUI());
@@ -92,7 +98,7 @@ public class Shop extends JPanel {
 		// --- [공통 버튼 이벤트] ---
 		backBtn.addActionListener(e -> {
 			JOptionPane.showMessageDialog(this, "이전 화면으로 돌아갑니다.");
-			FrameBase.getInstance(new MyPage());
+			FrameBase.getInstance(new CategoryPage());
 		});
 
 		cartBtnTop.addActionListener(e -> {
@@ -101,7 +107,7 @@ public class Shop extends JPanel {
 			} else {
 				if (cartDetailWindow == null || !cartDetailWindow.isVisible()) {
 					cartDetailWindow = new CartDetail(dataManager, () -> {
-						myMoneyLabel.setText("내 잔액: " + dataManager.getMyPrice() + "원");
+						myMoneyLabel.setText("내 잔액: " + dataManager.getMyPrice() + "P");
 					});
 				} else {
 					cartDetailWindow.toFront();
@@ -115,7 +121,7 @@ public class Shop extends JPanel {
 			} else {
 				if (orderDetailWindow == null || !orderDetailWindow.isVisible()) {
 					orderDetailWindow = new OrderDetail(dataManager, () -> {
-						myMoneyLabel.setText("내 잔액: " + dataManager.getMyPrice() + "원");
+						myMoneyLabel.setText("내 잔액: " + dataManager.getMyPrice() + "P");
 					});
 				} else {
 					orderDetailWindow.toFront();
@@ -135,13 +141,19 @@ public class Shop extends JPanel {
         // 1. 찜한 상품 먼저 그리기 (LinkedHashSet이라 누른 순서대로 나옴)
         for (String itemName : wishItems) {
             ItemInfo item = shopDB.get(itemName);
-            if (item != null) listPanel.add(createProductPanel(item));
+            if (item != null && (selectedCategory == null || item.getType().equals(selectedCategory))) {
+                listPanel.add(createProductPanel(item));
+            }
         }
 
         // 2. 찜하지 않은 나머지 상품 그리기
         for (Map.Entry<String, ItemInfo> entry : shopDB.entrySet()) {
             if (!wishItems.contains(entry.getKey())) {
-                listPanel.add(createProductPanel(entry.getValue()));
+                ItemInfo item = entry.getValue();
+                // 💡 [필터링] 똑같이 타입 비교 조건 추가!
+                if (selectedCategory == null || item.getType().equals(selectedCategory)) {
+                    listPanel.add(createProductPanel(item));
+                }
             }
         }
 
@@ -197,7 +209,7 @@ public class Shop extends JPanel {
 		nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // 💡 좌측 정렬로 변경
 
-		JLabel priceLabel = new JLabel("가격: " + item.getPrice() + "원");
+		JLabel priceLabel = new JLabel("가격: " + item.getPrice() + "P");
 		priceLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // 💡 좌측 정렬로 변경
 
 		textPanel.add(Box.createVerticalStrut(10));
@@ -269,17 +281,22 @@ public class Shop extends JPanel {
 
 			if (currentPrice >= totalPrice) {
 				dataManager.setMyPrice(currentPrice - totalPrice);
-
+	
+				// 💡 [추가] 상점 구매 지출 내역 기록!
+				if (UserInfo.currentUser != null) {
+					UserInfo.currentUser.addPointHistory("[" + item.getName() + "] " + selectedQty + "개 구매: -" + totalPrice + " P");
+				}
+				
 				// 주문 내역에도 선택한 수량만큼 추가
 				dataManager.getOrderHistory().put(item.getName(),
 						dataManager.getOrderHistory().getOrDefault(item.getName(), 0) + selectedQty);
 
-				myMoneyLabel.setText("내 잔액: " + dataManager.getMyPrice() + "원");
+				myMoneyLabel.setText("내 잔액: " + dataManager.getMyPrice() + "P");
 				JOptionPane.showMessageDialog(this,
-				"[" + item.getName() + "] " + selectedQty + "개 결제가 완료되었습니다! 🎉\n결제 금액: " + totalPrice + "원");
+				"[" + item.getName() + "] " + selectedQty + "개 결제가 완료되었습니다! 🎉\n결제 금액: " + totalPrice + "P");
 				qtySpinner.setValue(1);
 			} else {
-				JOptionPane.showMessageDialog(this, "잔액이 부족합니다. ㅠㅠ\n필요 금액: " + (totalPrice-UserInfo.currentUser.getPoints()) + "원", "구매 실패",
+				JOptionPane.showMessageDialog(this, "잔액이 부족합니다. ㅠㅠ\n필요 금액: " + (totalPrice-UserInfo.currentUser.getPoints()) + "P", "구매 실패",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		});

@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
 import Font.loadfont;
 import Frame.FrameBase;
@@ -13,7 +12,6 @@ import Share.BottomMenu;
 import Share.UserInfo;
 import Shop.OrderDetail;
 import Shop.ShopDataManager;
-import Shop.Shop;
 
 public class MyPage extends JPanel {
 
@@ -69,7 +67,6 @@ public class MyPage extends JPanel {
         JButton pointHistory = createStyledButton("포인트 적립 내역", 245);
         JButton btnHistory = createStyledButton("구매내역", 310);
         JButton btnFortune = createStyledButton("오늘의 운세 보기  -10p", 375);
-        JButton btnShop = createStyledButton("상점 가기", 440);
         
         // [3] 로그아웃 버튼 (하단 중앙 배치)
         JButton logout = new JButton("로그아웃");
@@ -85,7 +82,6 @@ public class MyPage extends JPanel {
         centerPanel.add(pointHistory);
         centerPanel.add(btnHistory);
         centerPanel.add(btnFortune);
-        centerPanel.add(btnShop);
         centerPanel.add(logout);
         
         // --- 이벤트 설정 (기존 로직 유지) ---
@@ -105,7 +101,6 @@ public class MyPage extends JPanel {
                     String newPw = new String(pwField.getPassword());
                     if (!newPw.trim().isEmpty()) {
                         user.setPassword(newPw);
-                        user.addHistory("비밀번호 변경 완료", 0);
                         showSimplePopup("변경 완료", "비밀번호가 안전하게 변경되었습니다.");
                     } else {
                         showSimplePopup("알림", "비밀번호를 입력해야 합니다.");
@@ -151,8 +146,6 @@ public class MyPage extends JPanel {
                 }
             }
         });
-
-        btnShop.addActionListener(e -> FrameBase.getInstance(new Shop()));
 
         logout.addActionListener(e -> {
             int result = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "Logout", JOptionPane.YES_NO_OPTION);

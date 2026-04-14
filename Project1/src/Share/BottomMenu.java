@@ -1,93 +1,89 @@
 package Share;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import Font.loadfont;
 import Frame.FrameBase;
 import Frame.LineSelect;
 import MyPage.MyPage;
+import Shop.CategoryPage;
 
+/**
+ * BottomMenu: 앱 하단의 내비게이션 바를 담당하는 클래스입니다.
+ * 나눔스퀘어 라운드 폰트와 따뜻한 일기장 톤의 디자인이 적용되었습니다.
+ */
 public class BottomMenu {
 
-	public static JPanel addFooterBar(JPanel frame) {
-		JPanel footerPanel = new JPanel();
-		footerPanel.setLayout(new GridLayout(1, 3));
+    // 디자인 테마 색상 정의
+    private static final Color COLOR_ACTIVE = new Color(70, 70, 70);       // 활성화된 글자색 (진한 회색)
+    private static final Color COLOR_INACTIVE = new Color(180, 170, 160);  // 비활성화된 글자색 (연한 회갈색)
+    private static final Color COLOR_BG = Color.WHITE;                     // 바 배경색
+    private static final Color COLOR_HOVER = new Color(255, 253, 240);     // 마우스 오버 시 따뜻한 크림색
 
-		// 패널 자체 배경도 하얀색으로 맞춤 (이미지처럼 회색이 안 남게)
-		footerPanel.setBackground(Color.WHITE);
-		footerPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(220, 220, 220)));
-		footerPanel.setPreferredSize(new Dimension(500, 70));
+    public static JPanel addFooterBar(JPanel currentPanel) {
+        JPanel footerPanel = new JPanel();
+        footerPanel.setLayout(new GridLayout(1, 3));
+        footerPanel.setBackground(COLOR_BG);
+        
+        // 상단에만 아주 연한 베이지색 선을 그어 영역을 구분합니다.
+        footerPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(235, 230, 220)));
+        footerPanel.setPreferredSize(new Dimension(410, 60)); // 높이를 적절히 조절
 
-		JButton btnHome = new JButton("메인화면");
-		JButton btnSubway = new JButton("지하철정보");
-		JButton btnSettings = new JButton("내정보");
+        // 각 버튼 생성 (텍스트, 이모지 아이콘, 활성화 여부)
+        JButton btnshop = createNavButton("상점", "🏠", currentPanel instanceof LineSelect);
+        JButton btnSubway = createNavButton("지하철", "🚇", !(currentPanel instanceof MyPage) && !(currentPanel instanceof LineSelect));
+        JButton btnSettings = createNavButton("내정보", "👤", currentPanel instanceof MyPage);
 
-		JButton[] footers = { btnHome, btnSubway, btnSettings };
+        // --- 이벤트 연결 (패널 교체 로직) ---
+        btnshop.addActionListener(e -> FrameBase.getInstance(new CategoryPage()));
+        btnSubway.addActionListener(e -> FrameBase.getInstance(new LineSelect())); 
+        btnSettings.addActionListener(e -> FrameBase.getInstance(new MyPage()));
 
-		for (int i = 0; i < footers.length; i++) {
-			JButton b = footers[i];
-			b.setFont(loadfont.Freesentation7Bold.deriveFont(16f));
-			b.setBackground(Color.WHITE);
-			b.setMargin(new Insets(10, 0, 10, 0));
-			
-			b.setOpaque(true); // 배경색을 불투명하게 (꽉 채우기)
-			b.setBorderPainted(true); // 테두리를 그리도록 설정
-			b.setContentAreaFilled(true); // 내용 영역 채우기
-			b.setFocusPainted(false);
-			b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        footerPanel.add(btnshop);
+        footerPanel.add(btnSubway);
+        footerPanel.add(btnSettings);
 
-			// 구분선 설정: 상하 여백을 20씩 주고 오른쪽에만 선 (마지막 버튼 제외)
-			if (i < footers.length - 1) {
-				b.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(235, 235, 235)));
-			} else {
-				b.setBorder(null);
-			}
+        return footerPanel;
+    }
 
-			// 롤오버 음영 효과
-			b.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					b.setBackground(new Color(248, 248, 248)); // 마우스 올리면 연한 회색
-				}
+    /**
+     * 일기장 감성에 맞춘 커스텀 네비게이션 버튼을 생성합니다.
+     */
+    private static JButton createNavButton(String text, String icon, boolean isActive) {
+        // HTML을 사용하여 아이콘(이모지)과 텍스트를 수직으로 배치
+        String buttonHtml = "<html><center><font size='5'>" + icon + "</font><br>" + text + "</center></html>";
+        JButton btn = new JButton(buttonHtml);
+        
+        // [수정] 폰트를 나눔스퀘어 라운드 Bold로 변경
+        btn.setFont(loadfont.NanumB.deriveFont(12f));
+        btn.setBackground(COLOR_BG);
+        btn.setForeground(isActive ? COLOR_ACTIVE : COLOR_INACTIVE);
+        
+        // 버튼 기본 스타일 제거 및 부드러운 설정
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setBorder(new EmptyBorder(8, 0, 5, 0)); // 상하 여백 조절
 
-				@Override
-				public void mouseExited(MouseEvent e) {
-					b.setBackground(Color.WHITE); // 나가면 다시 흰색
-				}
-			});
-
-			footerPanel.add(b);
-		}
-		btnHome.addActionListener(e -> {
-            // FrameBase의 싱글톤을 호출하여 패널만 교체!
-            FrameBase.getInstance(new LineSelect()); 
+        // 롤오버 효과: 마우스를 올리면 따뜻한 배경색으로 변경
+        btn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btn.setContentAreaFilled(true);
+                btn.setBackground(COLOR_HOVER);
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btn.setContentAreaFilled(false);
+                btn.setBackground(COLOR_BG);
+            }
         });
 
-        btnSubway.addActionListener(e -> {
-            // 지하철 정보 페이지(LineSelect 등)로 이동
-            FrameBase.getInstance(new LineSelect());
-        });
-
-        btnSettings.addActionListener(e -> {
-            // 내 정보 페이지로 이동
-            FrameBase.getInstance(new MyPage());
-        });
-		/*
-		 * // 클릭 이벤트 (이전과 동일) btnHome.addActionListener(e -> { //frame.dispose(); new
-		 * LineSelect(); }); btnSettings.addActionListener(e -> { frame.dispose(); new
-		 * MyPage().setVisible(true); });
-		 */
-
-		return footerPanel;
-	}
+        return btn;
+    }
 }
