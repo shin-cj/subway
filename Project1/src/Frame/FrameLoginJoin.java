@@ -10,13 +10,13 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import Font.loadfont;
-
+//ww
 /**
  * FrameLoginJoin: 회원가입 화면 패널입니다.
  * 일기장 테마(모눈종이, 기차 배경)와 나눔스퀘어 폰트, 부드러운 입력창 디자인을 적용했습니다.
  */
 public class FrameLoginJoin extends JPanel {
-
+	//진현
    // 테마 배경색 (일기장 종이색)
    private Color bgColor = new Color(255, 253, 240);
 
