@@ -5,93 +5,167 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.geom.RoundRectangle2D;
 
-import Font.loadfont; // 폰트 적용 (필요하면 맑은 고딕으로 바꿔도 됨)
+import Font.loadfont; 
 import Frame.FrameBase;
 import Frame.ModernScrollBarUI;
 import Share.BottomMenu;
-import java.awt.geom.RoundRectangle2D;
 
 public class CategoryPage extends JPanel {
 
     public CategoryPage() {
-        setSize(500, 700);
+        // 폰트가 로드되었는지 확인
+        if (loadfont.NanumEB == null) {
+            loadfont.loadFonts();
+        }
+
+        setSize(410, 670); // LineSelect와 동일한 창 사이즈에 맞춤 (필요시 500,700 유지 가능)
         setLayout(new BorderLayout());
-        setBackground(new Color(245, 245, 250)); // 연한 배경
+        setBackground(new Color(255, 253, 240)); // 💡 일기장 종이 배경색 적용
+        
+        
+        
+        // --- 📝 상단 타이틀 영역 (LineSelect와 완벽 동일) ---
+        JPanel headerPanel = new JPanel();
+        headerPanel.setOpaque(false); 
+        headerPanel.setPreferredSize(new Dimension(410, 80));
+        headerPanel.setLayout(new BorderLayout());
 
-        // 상단 타이틀
-        JLabel title = new JLabel("상품 카테고리 선택", SwingConstants.CENTER);
-        title.setFont(new Font("맑은 고딕", Font.BOLD, 24));
-        title.setBorder(new EmptyBorder(30, 0, 30, 0));
-        add(title, BorderLayout.NORTH);
+        JLabel title = new JLabel("카테고리를 선택해요", SwingConstants.CENTER);
+        title.setFont(loadfont.UhBeeSehyun.deriveFont(32f)); // 💡 어비세현 32f 폰트 적용
+        title.setForeground(new Color(70, 70, 70)); // 진한 회갈색
+        headerPanel.add(title, BorderLayout.CENTER);
+        add(headerPanel, BorderLayout.NORTH);
 
-        // 중앙 리스트 패널 (위에서 아래로 쌓이는 구조)
-        JPanel listPanel = new JPanel();
+        // --- 📦 중앙 리스트 패널 (낙서 배경이 포함된 커스텀 패널 사용) ---
+        DoodleListPanel listPanel = new DoodleListPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        listPanel.setOpaque(false);
-        listPanel.setBorder(new EmptyBorder(10, 30, 10, 30)); // 좌우 여백
+        listPanel.setBorder(new EmptyBorder(15, 30, 80, 30)); // 💡 LineSelect와 동일한 여백
 
-        // 💡 카테고리 데이터 (이름, 아이콘 이미지 경로)
-        // 나중에 실제 예쁜 아이콘을 /Img/ 폴더에 넣고 경로만 바꿔주면 돼!
-        // 추가 시 String + String으로
         String[][] categories = {
-            {"음료", "/Img/icon_drink.png"},
-            {"디저트", "/Img/icon_dessert.png"},
-            {"레저/스포츠", "/Img/icon_meal.png"},
-            {"뷰티","/Img/icon_meal.png"},
-            {"디지털/가전" ,"/Img/icon_meal.png"},
-            {"패션", "/Img/icon_meal.png"},
-            {"전체보기", "/Img/icon_all.png"}
+            {"음료", "/Img/icon_drink.jpg"},
+            {"디저트", "/Img/icon_dessert.jpg"},
+            {"레저/스포츠", "/Img/icon_Sports.jpg"},
+            {"뷰티","/Img/icon_Beauty.jpg"},
+            {"디지털/가전" ,"/Img/icon_digital.jpg"},
+            {"패션", "/Img/icon_fashion.jpg"},
+            {"전체보기", "/Img/icon_all.jpg"}
         };
 
-        // 데이터 개수만큼 버튼(패널) 생성해서 붙이기
         for (String[] cat : categories) {
             String categoryName = cat[0];
             String iconPath = cat[1];
 
-            // 💡 따로 만든 메서드를 호출해서 아이콘+텍스트가 합쳐진 패널을 받아옴
-            JPanel btnPanel = createCategoryButton(categoryName, iconPath);
+            JButton btnPanel = createCategoryButton(categoryName, iconPath);
             listPanel.add(btnPanel);
-            listPanel.add(Box.createVerticalStrut(15)); // 버튼 사이의 간격 띄우기
+            listPanel.add(Box.createVerticalStrut(12)); // 버튼 사이 간격
         }
 
-        // 스크롤 추가 (나중에 카테고리가 많아질 경우 대비)
+        // --- 📜 스크롤 패널 ---
         JScrollPane scrollPane = new JScrollPane(listPanel);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.getVerticalScrollBar().setUI(new ModernScrollBarUI());
-		scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
-		add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setOpaque(false); // 배경 투명화
+        scrollPane.getViewport().setOpaque(false); // 뷰포트 투명화
+        scrollPane.setBorder(null); // 테두리 제거
+        
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUI(new ModernScrollBarUI());
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
+        add(scrollPane, BorderLayout.CENTER);
 
-        // 하단 바 추가
         add(BottomMenu.addFooterBar(this), BorderLayout.SOUTH);
     }
 
-    // 💡 [핵심] 아이콘 + 텍스트를 하나로 묶어서 클릭되는 버튼(패널)으로 만들어주는 메서드
-    private JPanel createCategoryButton(String title, String iconPath) {
-        // 아이콘(West)과 텍스트(Center)를 나눌 수 있게 BorderLayout 사용
-        JPanel panel = new JPanel(new BorderLayout(10, 0)); // 아이콘과 글자 사이 간격 25
-        panel.setBackground(Color.WHITE);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 220, 220), 1), // 겉 테두리
-            new EmptyBorder(15, 20, 15, 20) // 안쪽 여백
-        ));
-        panel.setMaximumSize(new Dimension(400, 80)); // 버튼 최대 크기 고정
-        panel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스 올리면 손가락 모양
+    // --- 🎨 배경 낙서 패널 (모눈종이 + 멈춰있는 기차) ---
+    class DoodleListPanel extends JPanel {
+        public DoodleListPanel() { 
+            setOpaque(false); 
+        }
 
-        // 1. [왼쪽] 아이콘 영역
-        JLabel iconLabel = new JLabel() {
-        	@Override
-        	protected void paintComponent(Graphics g) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int w = getWidth(), h = getHeight();
+
+            // 1. 모눈종이 격자무늬 그리기
+            g2.setColor(new Color(235, 230, 210));
+            for (int i = 0; i < w; i += 30) g2.drawLine(i, 0, i, h);
+            for (int j = 0; j < h; j += 30) g2.drawLine(0, j, w, j);
+
+            // 2. 하단 낙서 (기차 + 구름) 그리기
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+            int trainY = h - 70; // 가장 아래쪽(h)에서 70만큼 띄워서 그리기
+            
+            // 객차 2칸
+            g2.setColor(new Color(255, 100, 100)); g2.fillRoundRect(50, trainY, 60, 35, 10, 10);
+            g2.setColor(new Color(100, 150, 255)); g2.fillRoundRect(115, trainY, 60, 35, 10, 10);
+            
+            // 바퀴
+            g2.setColor(new Color(80, 80, 80));
+            g2.fillOval(60, trainY + 30, 12, 12); g2.fillOval(85, trainY + 30, 12, 12);
+            g2.fillOval(125, trainY + 30, 12, 12); g2.fillOval(150, trainY + 30, 12, 12);
+
+            // 구름
+            g2.setColor(Color.WHITE);
+            g2.fillOval(w - 110, trainY - 45, 35, 25);
+            g2.fillOval(w - 90, trainY - 55, 45, 35);
+            g2.fillOval(w - 65, trainY - 45, 35, 25);
+            
+            g2.dispose();
+        }
+    }
+
+    // --- 카테고리 버튼 생성 메서드 ---
+    private JButton createCategoryButton(String title, String iconPath) {
+    	// 💡 1. 클래스를 따로 만들지 않고, 여기서 바로 JButton의 디자인을 덮어씌움 (익명 클래스 활용)
+        JButton btn = new JButton() {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
+
+                // 입체감을 위한 그림자
+                g2.setColor(new Color(0, 0, 0, 20));
+                g2.fillRoundRect(2, 4, getWidth() - 2, getHeight() - 4, 25, 25);
+
+                // 마우스 상태(호버, 클릭)에 따른 배경색 변경
+                if (getModel().isPressed()) {
+                    g2.setColor(new Color(230, 230, 230)); // 클릭 시 살짝 회색
+                } else if (getModel().isRollover()) {
+                    g2.setColor(new Color(240, 248, 255)); // 호버 시 연한 파란색
+                } else {
+                    g2.setColor(Color.WHITE); // 기본 배경은 흰색
+                }
+
+                g2.fillRoundRect(0, 0, getWidth() - 2, getHeight() - 4, 25, 25);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+
+        // 💡 2. 버튼 기본 설정
+        btn.setLayout(new BorderLayout(10, 0)); 
+        btn.setContentAreaFilled(false);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setBorder(new EmptyBorder(10, 20, 15, 20)); 
+        btn.setMaximumSize(new Dimension(350, 75));
+
+        // 💡 3. 아이콘 설정
+        JLabel iconLabel = new JLabel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 if (getIcon() == null) {
-                    // 💡 이미지가 없을 때는 파란색 둥근 배경을 "직접" 색칠합니다!
                     g2.setColor(new Color(100, 150, 220));
                     g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 15, 15));
                 } else {
-                    // 💡 이미지가 있을 때는 마스크를 씌워서 그립니다!
                     g2.setClip(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 15, 15));
                     super.paintComponent(g2);
                 }
@@ -99,7 +173,6 @@ public class CategoryPage extends JPanel {
             }
         };
         iconLabel.setPreferredSize(new Dimension(60, 50));
-        
         iconLabel.setOpaque(false);
         
         java.net.URL imgURL = getClass().getResource(iconPath);
@@ -109,42 +182,21 @@ public class CategoryPage extends JPanel {
             iconLabel.setIcon(new ImageIcon(img));
         }
 
-        // 2. [오른쪽] 텍스트 영역
+        // 💡 4. 텍스트 설정
         JLabel textLabel = new JLabel(title);
-        textLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
-        
-        // 텍스트 글자 사이에 간격을 주고 싶다면 아래처럼 띄어쓰기를 넣어도 돼!
-        // 예: "음 료", "디 저 트" 
-        // 텍스트를 살짝 더 오른쪽으로 보내고 싶다면 여백을 줌
+        textLabel.setFont(loadfont.NanumEB.deriveFont(18f));
         textLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
 
-        panel.add(iconLabel, BorderLayout.WEST);
-        panel.add(textLabel, BorderLayout.CENTER);
+        // 💡 5. 버튼(btn) 안에 아이콘과 텍스트 조립
+        btn.add(iconLabel, BorderLayout.WEST);
+        btn.add(textLabel, BorderLayout.CENTER);
 
-        // 3. [이벤트] 마우스 클릭 & 호버 효과 달아주기
-        MouseAdapter clickEvent = new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                panel.setBackground(new Color(240, 248, 255)); // 마우스 올리면 아주 연한 파란색
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                panel.setBackground(Color.WHITE); // 마우스 떼면 다시 흰색
-            }
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // 💡 패널을 클릭하면 상점 화면으로 이동!
-                // "전체보기"를 누르면 null을 보내서 필터링 없이 다 나오게 함
-                String filter = title.equals("전체보기") ? null : title;
-                FrameBase.getInstance(new Shop(filter)); 
-            }
-        };
+        // 💡 6. 클릭 시 상점 이동 이벤트
+        btn.addActionListener(e -> {
+            String filter = title.equals("전체보기") ? null : title;
+            FrameBase.getInstance(new Shop(filter)); 
+        });
 
-        // 💡 텍스트를 누르든, 이미지를 누르든, 여백을 누르든 다 똑같이 작동하도록 셋 다 이벤트 달기
-        panel.addMouseListener(clickEvent);
-        iconLabel.addMouseListener(clickEvent);
-        textLabel.addMouseListener(clickEvent);
-
-        return panel;
+        return btn; // 완성된 버튼 반환
     }
 }

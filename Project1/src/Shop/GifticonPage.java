@@ -79,10 +79,19 @@ public class GifticonPage extends JFrame{
 
 			// 💡 이미 사용(구매 완료)된 기프티콘인지 확인
 			if (completedOrders.contains(itemName)) {
-				JLabel usedLabel = new JLabel("사용 완료");
-				usedLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-				usedLabel.setForeground(Color.GRAY);
-				btnPanel.add(usedLabel);
+				// [수정] 글자 대신 '기프티콘 출력' 버튼 생성
+				JButton showGifticonBtn = new JButton("기프티콘 출력");
+				showGifticonBtn.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+				showGifticonBtn.setBackground(new Color(255, 102, 102)); // 예쁜 포인트 색상 (취향껏 변경 가능!)
+				showGifticonBtn.setForeground(Color.WHITE);
+				showGifticonBtn.setFocusPainted(false);
+				
+				// 💡 버튼 클릭 시 팝업 띄우는 이벤트 연결
+				showGifticonBtn.addActionListener(e -> {
+					showQRCodePopup(itemName);
+				});
+				
+				btnPanel.add(showGifticonBtn);
 			} else {
 				JButton useBtn = new JButton("구매 완료"); // 기프티콘 사용 버튼
 				useBtn.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
@@ -119,5 +128,60 @@ public class GifticonPage extends JFrame{
 		setVisible(true);
 	}
 	
+	
+	
+	// 💡 [추가] 기프티콘 바코드/QR 팝업창 띄우는 메서드
+		private void showQRCodePopup(String itemName) {
+			javax.swing.JDialog popup = new javax.swing.JDialog(this, "교환권", true);
+			popup.setSize(300, 350);
+			popup.setLayout(new java.awt.BorderLayout());
+			popup.setLocationRelativeTo(this);
+			popup.getContentPane().setBackground(Color.WHITE); // 배경 하얗게 깔끔하게!
+
+			// 1. 상단: 상품명
+			JLabel title = new JLabel("[" + itemName + "] 교환권", SwingConstants.CENTER);
+			title.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+			title.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+			popup.add(title, BorderLayout.NORTH);
+
+			// 2. 중앙: QR/바코드 이미지
+			JLabel imgLabel = new JLabel();
+			imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			try {
+				// 💡 예전에 사용했던 QR코드 이미지 경로! 만약 파일 이름이 다르면 여기를 수정해 줘.
+				java.net.URL imgUrl = getClass().getResource("/Img/barcode.jpg"); 
+				if (imgUrl != null) {
+					javax.swing.ImageIcon originalIcon = new javax.swing.ImageIcon(imgUrl);
+					java.awt.Image scaledImage = originalIcon.getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH);
+					imgLabel.setIcon(new javax.swing.ImageIcon(scaledImage));
+				} else {
+					imgLabel.setText("QR 이미지 없음 (/Img/QRCode.png 필요)");
+				}
+			} catch (Exception ex) {
+				imgLabel.setText("이미지 오류");
+			}
+			popup.add(imgLabel, BorderLayout.CENTER);
+
+			// 3. 하단: 가짜 바코드 번호 + 닫기 버튼
+			JPanel bottomPanel = new JPanel(new java.awt.BorderLayout());
+			bottomPanel.setBackground(Color.WHITE);
+			
+			// 💡 리얼함을 살리기 위해 12자리의 랜덤 바코드 번호 생성!
+			long randomBarcode = (long)(Math.random() * 899999999999L) + 100000000000L; 
+			JLabel barcodeNum = new JLabel("바코드 번호: " + randomBarcode, SwingConstants.CENTER);
+			barcodeNum.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+			barcodeNum.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+			bottomPanel.add(barcodeNum, BorderLayout.NORTH);
+
+			JButton closeBtn = new JButton("닫기");
+			closeBtn.setFont(new Font("맑은 고딕", Font.BOLD, 13));
+			closeBtn.setFocusPainted(false);
+			closeBtn.addActionListener(e -> popup.dispose());
+			bottomPanel.add(closeBtn, BorderLayout.SOUTH);
+
+			popup.add(bottomPanel, BorderLayout.SOUTH);
+
+			popup.setVisible(true); // 짠! 팝업 띄우기
+		}
 	
 }
