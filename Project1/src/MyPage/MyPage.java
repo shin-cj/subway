@@ -28,7 +28,7 @@ public class MyPage extends JPanel {
 
         // 상점 데이터매니저와 유저 포인트 일치시킴
         dataManager.setMyPrice(userPoints);
-
+        //ww
         // FrameBase의 타이틀바(30px)를 제외한 높이 670과 폭 410에 맞춤
         setSize(410, 670);
         setLayout(new BorderLayout());
