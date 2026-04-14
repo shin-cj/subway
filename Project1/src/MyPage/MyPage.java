@@ -77,7 +77,9 @@ public class MyPage extends JPanel {
         logout.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         logout.setCursor(new Cursor(Cursor.HAND_CURSOR));
         logout.setFocusPainted(false);
-
+        
+        123123
+        
         centerPanel.add(userInfoBtn);
         centerPanel.add(pointHistory);
         centerPanel.add(btnHistory);
