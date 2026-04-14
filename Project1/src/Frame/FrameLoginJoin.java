@@ -16,7 +16,7 @@ import Font.loadfont;
  * 일기장 테마(모눈종이, 기차 배경)와 나눔스퀘어 폰트, 부드러운 입력창 디자인을 적용했습니다.
  */
 public class FrameLoginJoin extends JPanel {
-
+	//zz
    // 테마 배경색 (일기장 종이색)
    private Color bgColor = new Color(255, 253, 240);
 
