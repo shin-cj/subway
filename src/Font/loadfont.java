@@ -13,7 +13,8 @@ public class loadfont {
     public static Font NanumEB; // ExtraBold
     public static Font NanumB;  // Bold
     public static Font NanumR;  // Regular
-    // 변경
+    // 변
+    // 경
     // --- 2. 타이틀용 어비 세현 서체 ---
     public static Font UhBeeSehyun;
     
