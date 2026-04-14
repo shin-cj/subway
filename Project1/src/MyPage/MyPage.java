@@ -57,6 +57,8 @@ public class MyPage extends JPanel {
         Pointmax.setFont(loadfont.Freesentation7Bold.deriveFont(12f));
         Pointmax.setForeground(Color.GRAY);
 
+        123123
+        
         userCard.add(lblUser);
         userCard.add(lblPoint);
         userCard.add(Pointmax);
